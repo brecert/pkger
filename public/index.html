@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>pkger</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="normalize.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <main>
+      <h1 id="pkger">PKGER</h1>
+      <blockquote>
+        <p>rollup as a web service, done poorly.</p>
+      </blockquote>
+      <h3 id="about-pkger">About PKGER</h3>
+      <blockquote>
+        <p>PKGER is web layer over rollup that outputs esm bundles</p>
+      </blockquote>
+      <p>
+        PKGER is meant for quick development and prototyping of websites that
+        use ESM modules.
+      </p>
+      <p>
+        PKGER is not meant to be used for producution at all, if you do want to
+        use PKGER in production, contact me.
+      </p>
+      <h3 id="shorthands">Shorthands</h3>
+      <blockquote>
+        <p>short, memoriable, and easy to use urls</p>
+      </blockquote>
+      <p>
+        shorthands will redirect and resolve to more complete and static urls.
+      </p>
+      <p>
+        If a tag is not provided then it will resolve to the latest version when
+        redirecting.
+      </p>
+      <p>
+        for example <code>/@brecert/flakeid</code> may have a latest version of
+        <code>2.0.0</code> so when redirecting it will redirect to
+        <code>/-/@brecert/flakeid@2.0.0/dist-web/index.js</code>.
+      </p>
+      <h4 id="url-format">URL Format</h4>
+      <ul>
+        <li><code>/:package</code></li>
+        <li><code>/:package@:tag</code></li>
+        <li><code>/@:namespace/:package</code></li>
+        <li><code>/@:namespace/:package@:tag</code></li>
+      </ul>
+      <h4 id="examples">Examples</h4>
+      <ul>
+        <li><code>https://pkger.glitch.me/futoji</code></li>
+        <li><code>https://pkger.glitch.me/futoji@0.5.1</code></li>
+        <li><code>https://pkger.glitch.me/@brecert/flakeid</code></li>
+        <li><code>https://pkger.glitch.me/@brecert/flakeid@^2.0.0</code></li>
+      </ul>
+      <h3 id="static-urls">Static URLS</h3>
+      <blockquote>
+        <p>longer, more static urls that are safer to use</p>
+      </blockquote>
+      <p>
+        static urls are expected to remain the same and should be “safer” use to
+        use, although pkger is not meant for any sort of real use
+      </p>
+      <h4 id="url-format-1">URL Format</h4>
+      <ul>
+        <li><code>/-/:package@:tag/**</code></li>
+        <li><code>/-/@:namespace/:package@:tag/**</code></li>
+      </ul>
+      <h4 id="examples-1">Examples</h4>
+      <ul>
+        <li><code>https://pkger.glitch.me/-/futoji@0.2.1/index.js</code></li>
+        <li>
+          <code
+            >https://pkger.glitch.me/-/@brecert/flakeid@2.0.0/dist-web/index.js</code
+          >
+        </li>
+      </ul>
+      <h3 id="entry-selection">Entry Selection</h3>
+      <blockquote>
+        <p>Selects a the entry type to use when bundling.</p>
+      </blockquote>
+      <h4 id="examples-2">Examples</h4>
+      <ul>
+        <li><code>/example-package?main</code></li>
+        <li><code>/example-package?browser</code></li>
+        <li><code>/example-package?esm</code></li>
+        <li><code>/example-package?node</code></li>
+        <li>etc…</li>
+      </ul>
+      <h3 id="safe-mode">Safe Mode</h3>
+      <blockquote>
+        <p>Disables any “non-standard” rollup bundling features.</p>
+      </blockquote>
+      <ul>
+        <li>commonjs import resolution</li>
+        <li>node resolution</li>
+        <li>json importing</li>
+      </ul>
+      <h4 id="example">Example</h4>
+      <ul>
+        <li><code>/example-package?safe-mode</code></li>
+      </ul>
+    </main>
+    <footer>
+      <address>
+        <a href="https://github.com/brecert" title="brecert's github profile">
+          <svg
+            width="24"
+            height="24"
+            class="octicon octicon-mark-github"
+            viewbox="0 0 16 16"
+            version="1.1"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+            ></path>
+          </svg>
+        </a>
+        <span style="float: inline-end;">
+          created by <a href="https://twitter.com/brecert" title="brecert's twitter">brecert</a>
+        </span>
+      </address>
+    </footer>
+    <script src="https://button.glitch.me/button.js" defer></script>
+  </body>
+</html>

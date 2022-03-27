@@ -1,0 +1,37 @@
+/* styles */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: helvetica, arial, sans-serif;
+  margin: 2em;
+}
+
+h1 {
+  font-style: italic;
+  color: #373fff;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+footer {
+  margin-top: 50px;
+  padding-top: 25px;
+  border-top: 1px solid lightgrey;
+}
+
+blockquote {
+  margin: 0;
+  padding-left: 20px;
+  border-left: 3px solid #a0aabf;
+  font-style: italic;
+  color: #435
+}
+
+blockquote p {
+  padding: 15px 0;
+}
