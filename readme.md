@@ -1,5 +1,10 @@
+```
+originally made in late 2019
+imported from: https://glitch.com/edit/#!/pkger
+```
+
 # PKGER
-> rollup as a web service, done poorly.
+> rollup as a web service
 
 ### About PKGER
 > PKGER is web layer over rollup that outputs esm bundles
