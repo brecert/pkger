@@ -4,10 +4,10 @@ imported from: https://glitch.com/edit/#!/pkger
 ```
 
 # PKGER
-> rollup as a web service
+> esbuild as a web service (done poorly)
 
 ### About PKGER
-> PKGER is web layer over rollup that outputs esm bundles
+> PKGER is web layer over esbuild that outputs esm bundles
 
 PKGER is meant for quick development and prototyping of websites that use ESM modules.
 
@@ -60,15 +60,3 @@ static urls are expected to remain the same and should be "safer" use to use, al
 - `/example-package?browser`
 - `/example-package?esm`
 - `/example-package?node`
-
-### Safe Mode
-
-> Disables any "non-standard" rollup bundling features.
-
-- commonjs import resolution
-- node resolution
-- json importing
-
-#### Example
-
-- `/example-package?safe-mode`

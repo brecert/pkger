@@ -25,19 +25,14 @@ import * as readPackageJson from "@pnpm/read-package-json";
 // tempy gets/creates a random temporary folder/directory
 import * as tempy from "tempy";
 
-// rollup is what bundles the packages together
-import * as rollup from "rollup";
+// esbuild is what bundles the packages together
+import * as esbuild from "esbuild";
 
 // todo: explain path
 import * as path from "path";
 
 // todo: explain fs
 import * as fs from "fs";
-
-// rollup plugins that are used to add and extend what rollup can bundle
-import nodeResolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import json from "@rollup/plugin-json";
 
 // small utils that are put in another file as to not clutter this one.
 import { parsePackageTag, createQuery } from "./utils.js";
@@ -51,15 +46,15 @@ const MODULE_TYPES = [
   "node",
   "commonjs",
   "common-js",
-  "commonjs-external"
+  "commonjs-external",
 ];
 
 // create a middleware handler that will use the public folder for static files
-const staticFiles = serveStatic(path.join('./', "public"), {
+const staticFiles = serveStatic(path.join("./", "public"), {
   lastModified: false,
   setHeaders: (res, _) => {
     res.setHeader("cache-control", "public, no-cache, max-age=604800");
-  }
+  },
 });
 
 // registry to use when fetching packages
@@ -70,7 +65,7 @@ const rawConfig = { registry };
 const npmResolve = createResolver({
   metaCache: new Map(),
   rawConfig,
-  storeDir: ".store"
+  storeDir: ".store",
 });
 
 // create an npm fetcher, this downloads the package contents
@@ -78,7 +73,7 @@ const npmFetch = createFetcher({
   alwaysAuth: false,
   rawConfig,
   registry,
-  strictSsl: false
+  strictSsl: false,
 });
 
 const storeIndex = {};
@@ -88,7 +83,7 @@ const requestPackage = createPackageRequester(npmResolve, npmFetch, {
   networkConcurrency: 1,
   storeDir: ".store",
   storeIndex,
-  verifyStoreIntegrity: true
+  verifyStoreIntegrity: true,
 });
 
 // create the restana server and use the query middleware
@@ -112,7 +107,7 @@ async function resolvePackage(packageName, tag) {
       importerDir,
       lockfileDir: importerDir,
       preferredVersions: {},
-      registry
+      registry,
     }
   );
 
@@ -127,22 +122,15 @@ async function resolvePackage(packageName, tag) {
   await response.finishing();
   // get the location of downloaded files
   const packageDir = path.resolve(response.body.inStoreLocation, "package");
-  const packageJson = await readPackageJson.fromDir(packageDir);
+  const packageJson = await readPackageJson.safeReadPackageFromDir(packageDir);
 
   if (packageJson === undefined) {
     throw new Error("missing package.json");
   }
 
-  const entrypoint =
-    packageJson.module || packageJson.main || packageJson.files[0];
-
-  if (entrypoint === undefined) {
-    throw new Error("no valid entrypoint found");
-  }
-
   return {
     packageDir,
-    packageJson
+    packageJson,
   };
 }
 
@@ -153,7 +141,7 @@ async function resolvePackage(packageName, tag) {
 async function bundlePackage(
   packageDir,
   manifest,
-  { safeMode = false, entryType = "default", filename = "index.js" } = {}
+  { entryType = "default", filename = "index.js" } = {}
 ) {
   // if dependencies exist then resolve and download those packages to be bundled too
   if (manifest.dependencies) {
@@ -161,21 +149,6 @@ async function bundlePackage(
       resolvePackage(dep, ver)
     );
   }
-
-  // if safe mode is enabled, then don't use more complex and advanced plugins that change the way modules are resolved
-  const plugins = safeMode
-    ? []
-    : [
-        nodeResolve({
-          browser: true,
-          customResolveOptions: {
-            // todo: don't hardcode the registry
-            moduleDirectory: path.resolve(".store", "registry.npmjs.org")
-          }
-        }),
-        commonjs(),
-        json()
-      ];
 
   const isFile = !filename || fs.existsSync(path.resolve(packageDir, filename));
 
@@ -189,16 +162,19 @@ async function bundlePackage(
     throw new Error(`entry module not found: ${entryFile}`);
   }
 
-  // use rollup to bundle the entryFile
-  const bundle = await rollup.rollup({
-    input: path.resolve(packageDir, entryFile),
-    treeshake: true,
-    plugins
-  });
+  const filePath = path.resolve(".bundled", packageDir, entryFile);
 
-  // using the bundler, generate esm compatible code
-  const generated = await bundle.generate({ format: "esm" });
-  return generated;
+  const result = await esbuild
+    .build({
+      entryPoints: [path.resolve(packageDir, entryFile)],
+      nodePaths: [".store"],
+      bundle: true,
+      format: "esm",
+      outfile: filePath,
+    })
+    .catch((_) => _);
+
+  return fs.readFileSync(filePath, "utf8");
 }
 
 /**
@@ -215,37 +191,23 @@ async function generateCode(namespacePackage, tag, options, filename) {
   );
 
   const query = new URLSearchParams(options);
-  const safeMode = query.has("safe-mode");
 
   // if the query contains a valid entry type, choose that, otheriwse chose the default entry type
-  const entryType = MODULE_TYPES.find(mode => query.has(mode)) || "default";
+  const entryType = MODULE_TYPES.find((mode) => query.has(mode)) || "default";
 
   const code = await bundlePackage(packageDir, packageJson, {
-    safeMode,
     entryType,
-    filename
+    filename,
   });
 
   if (query.has("--debug")) {
-    if(filename === "" || filename === undefined) {
-      return packageDir
+    if (filename === "" || filename === undefined) {
+      return packageDir;
     }
     return code;
   }
-  
-  const output = code.output.find(
-    out => path.basename(out.facadeModuleId) === path.basename(filename) || out.fileName === path.basename(filename)
-  );
 
-  if (!output) {
-    throw new Error(
-      `unknown file: \`${filename}\` did you mean \`${code.output.map(
-        part => part.fileName
-      )}\`?`
-    );
-  }
-
-  return output.code;
+  return code;
 }
 
 // ROUTES
@@ -260,7 +222,7 @@ const redirect = (res, location) => {
 const cdnRedirect = async (req, res, alias, tag) => {
   // get the package information to get the latest version/tag because the tag wasn't specified in the url params
   const pkg = await npmResolve({ alias, pref: tag }, { registry });
-  
+
   // redirect to the more stable cdn with the canonical package name, using the latest version, and maintaining the requests query string
   redirect(
     res,
@@ -278,7 +240,9 @@ service.get("/:packageTag", (req, res) =>
 );
 
 service.get("/@:namespace/:packageTag", (req, res) => {
-  const [packageName, packageVersion] = parsePackageTag(req.params.packageTag, { versionRequired: false });
+  const [packageName, packageVersion] = parsePackageTag(req.params.packageTag, {
+    versionRequired: false,
+  });
 
   cdnRedirect(
     req,
@@ -296,14 +260,14 @@ async function redirectToFile(req, res, namespacePackage, tag, options) {
     namespacePackage,
     tag || "latest"
   );
-  
+
   let entryType =
-    MODULE_TYPES.find(m => m in req.query) ||
-    MODULE_TYPES.find(m => m in packageJson);
+    MODULE_TYPES.find((m) => m in req.query) ||
+    MODULE_TYPES.find((m) => m in packageJson);
 
   const entryFile = packageJson[entryType] || "index.js";
 
-  redirect(res, `${entryFile}/${createQuery(req.query)}`);
+  redirect(res, `${entryFile}${createQuery(req.query)}`);
 }
 
 // create the static cdn routes and send the code
@@ -357,4 +321,4 @@ service.use(cache());
 // start the server
 service
   .start()
-  .then(server => console.log(`listening on ${server.address().port}`));
+  .then((server) => console.log(`listening on ${server.address().port}`));

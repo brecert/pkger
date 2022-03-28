@@ -7,15 +7,18 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body>
-    <div class="glitchButton" style="position:fixed;top:20px;right:20px;"></div>
+    <div
+      class="glitchButton"
+      style="position: fixed; top: 20px; right: 20px"
+    ></div>
     <main>
       <h1 id="pkger">PKGER</h1>
       <blockquote>
-        <p>rollup as a web service, done poorly.</p>
+        <p>esbuild as a web service (done poorly)</p>
       </blockquote>
       <h3 id="about-pkger">About PKGER</h3>
       <blockquote>
-        <p>PKGER is web layer over rollup that outputs esm bundles</p>
+        <p>PKGER is web layer over esbuild that outputs esm bundles</p>
       </blockquote>
       <p>
         PKGER is meant for quick development and prototyping of websites that
@@ -23,7 +26,7 @@
       </p>
       <p>
         PKGER is not meant to be used for producution at all, if you do want to
-        use PKGER in production, contact me.
+        use PKGER in production please contact me.
       </p>
       <h3 id="shorthands">Shorthands</h3>
       <blockquote>
@@ -39,7 +42,7 @@
       <p>
         for example <code>/@brecert/flakeid</code> may have a latest version of
         <code>2.0.0</code> so when redirecting it will redirect to
-        <code>/-/@brecert/flakeid@2.0.0/dist-web/index.js</code>.
+        <code>/-/flakeid/2.0.0/dist-web/index.js</code>.
       </p>
       <h4 id="url-format">URL Format</h4>
       <ul>
@@ -50,8 +53,7 @@
       </ul>
       <h4 id="examples">Examples</h4>
       <ul>
-        <li><code>https://pkger.glitch.me/futoji</code></li>
-        <li><code>https://pkger.glitch.me/futoji@0.5.1</code></li>
+        <li><code>https://pkger.glitch.me/futoji/</code></li>
         <li><code>https://pkger.glitch.me/@brecert/flakeid</code></li>
         <li><code>https://pkger.glitch.me/@brecert/flakeid@^2.0.0</code></li>
       </ul>
@@ -60,8 +62,8 @@
         <p>longer, more static urls that are safer to use</p>
       </blockquote>
       <p>
-        static urls are expected to remain the same and should be “safer” use to
-        use, although pkger is not meant for any sort of real use
+        static urls are expected to remain the same and should be ÔÇ£saferÔÇØ
+        use to use, although pkger is not meant for any sort of real use
       </p>
       <h4 id="url-format-1">URL Format</h4>
       <ul>
@@ -87,20 +89,6 @@
         <li><code>/example-package?browser</code></li>
         <li><code>/example-package?esm</code></li>
         <li><code>/example-package?node</code></li>
-        <li>etc…</li>
-      </ul>
-      <h3 id="safe-mode">Safe Mode</h3>
-      <blockquote>
-        <p>Disables any “non-standard” rollup bundling features.</p>
-      </blockquote>
-      <ul>
-        <li>commonjs import resolution</li>
-        <li>node resolution</li>
-        <li>json importing</li>
-      </ul>
-      <h4 id="example">Example</h4>
-      <ul>
-        <li><code>/example-package?safe-mode</code></li>
       </ul>
     </main>
     <footer>
@@ -120,8 +108,11 @@
             ></path>
           </svg>
         </a>
-        <span style="float: inline-end;">
-          created by <a href="https://twitter.com/brecert" title="brecert's twitter">brecert</a>
+        <span style="float: inline-end">
+          created by
+          <a href="https://twitter.com/brecert" title="brecert's twitter"
+            >brecert</a
+          >
         </span>
       </address>
     </footer>

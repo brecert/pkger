@@ -17,10 +17,13 @@ export function parsePackageTag(tag, { versionRequired = true } = {}) {
 }
 
 export function createQuery(query) {
-  const map = Object.entries(query).map(([k, v]) => v !== '' ? `${k}=${v}` : `${k}`).join("&")
-  if(map.length > 0) {
-    return `?${map}`
+  const map = Object.entries(query)
+    .map(([k, v]) => (v !== "" ? `${k}=${v}` : `${k}`))
+    .join("&");
+
+  if (map.length > 0) {
+    return `?${map}`;
   } else {
-    return ""
+    return "";
   }
 }
